@@ -1,0 +1,30 @@
+I want you to an app that sends automatically personalized emails (with attachments) from my outlook app using an database as a reference. I am using Windows 11.
+
+The technology you will have to use is Python (Flask App). Feel to choose the optimal language for the database.
+
+In the structure, you'll have a template folder named "templates" with:
+- cv.docx: a template of my cv with a placeholder {{ role }}.
+- cover_letter_french.docx: a template of my cover letter in french with placeholder {{ date }}, {{ job }}, {{ company }}, {{ name }}
+- cover_letter_english.docx: a template of my cover letter in english with placeholder {{ date }}, {{ job }}, {{ company }}, {{ name }}, {{ signature }}
+- mail_french.txt: a template of the mail in french to send also with the placeholder {{ name }} and {{ job }}.
+- mail_english.txt: a template of the mail in english to send also with the placeholder {{ name }} and {{ job }}.
+
+The database will have these columns: email, job, company, name, role, language.
+The user should be able to easely see, modify, delete this database.
+
+Here is a detailed explanation of how the app should work:
+
+For each row in the db:
+
+1. Generation of the CV
+According to the role, you'll generate in PDF the cv replacing the placeholder role with role corresponding to the db. The CV should be named "CV - Justin Isambert.pdf".
+
+2. Generation of the Cover Letter
+Similarly, you'll generate in PDF the cover letter choosing the right language and replacing the placeholders. The cover letter should be named "Cover Letter - Justin Isambert.pdf".
+For the English version, if a name is provided, {{ name }} should be replaced and {{ signature }} would be "Yours sincerely". If no name is provided, {{ name }} is equal to "Sir or Madam" and {{ signature }} to "Yours faithfully". Met la date du jour pour {{ date }}.
+Dans la lettre en français, si {{ name }} est donné, alors remplace le. Sinon, {{ name }} == "Madame, Monsieur". Il n'y a pas {{ signature }} donc ne t'en occupe pas.
+
+3. Sending the email with attachements CV and Cover Letter
+I have both Outlook Classic and Outlook New (process name "olk.exe") installed on my windows machine. I prefer using Outlook New but if it is not possible use Outlook Classic. 
+
+You'll write DRY code using best practices, and using an efficient logging system.

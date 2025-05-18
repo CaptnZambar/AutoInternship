@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Generate CV - Email Automation System{% endblock %}
+
+{% block content %}
+<div class="py-4 text-center">
+    <h2>Generate CV</h2>
+    <p class="lead">Generate a standalone CV with your specified role.</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form method="POST" action="{{ url_for('standalone_cv') }}">
+            <div class="mb-3">
+                <label for="role" class="form-label">Role for CV <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="role" name="role" value="Trading Assistant" required>
+                <div class="form-text">This will replace {{ role }} in your CV template.</div>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Generate CV</button>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Back to Main Page</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,12 @@
+#OBJECT 
+Application {{ role }} – From July to December 2025
+
+#BODY
+Dear {{ name }}, 
+
+I am extremely motivated to work as a {{ job }} within your desk. My resume and a statement of my motivation are attached.
+
+Wishing you a great day,
+Justin Isambert
+📞 +33 7 77 44 70 97
+🔗 https://justin-win95.vercel.app/

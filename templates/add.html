@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New Contact - Email Automation System{% endblock %}
+
+{% block content %}
+<div class="py-4 text-center">
+    <h2>Add New Contact</h2>
+    <p class="lead">Fill out the form to add a new contact to the system.</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <form method="POST" action="{{ url_for('add') }}">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="job" class="form-label">Job Position <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="job" name="job" value="Trading Assistant" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="company" class="form-label">Company <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="company" name="company" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="name" class="form-label">Contact Person's Name</label>
+                <input type="text" class="form-control" id="name" name="name">
+                <div class="form-text">Leave blank to use default salutation.</div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="role" class="form-label">Role for CV <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="role" name="role" value="Trading Assistant" required>
+                <div class="form-text">This will replace {{ role }} in your CV template.</div>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label for="cover_letter_language">Cover Letter Language:</label>
+                <select class="form-control" id="cover_letter_language" name="cover_letter_language" required>
+                    <option value="english" selected>English</option>
+                    <option value="french">French</option>
+                </select>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label for="email_language">Email Language:</label>
+                <select class="form-control" id="email_language" name="email_language" required>
+                    <option value="english">English</option>
+                    <option value="french" selected>French</option>
+                </select>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                <button type="submit" class="btn btn-primary">Add Contact</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 
