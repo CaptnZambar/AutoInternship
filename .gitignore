@@ -1,3 +1,4 @@
 logs/
 output/
 __pycache__/
+email_data.db
