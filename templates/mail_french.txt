@@ -2,11 +2,12 @@
 Stage {{ role }} – Juillet à Décembre 2025
 
 #BODY
-{{ name }},
+{{ name }}
 
 Je suis extrêmement motivé pour travailler comme {{ job }}. Mon CV et les raisons de ma motivation sont en pièces jointes.
 
 Une excellente journée,
+
 Justin Isambert
 📞 +33 7 77 44 70 97
 🔗 https://justin-win95.vercel.app/

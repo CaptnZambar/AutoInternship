@@ -15,12 +15,8 @@
             <tr>
                 <th>ID</th>
                 <th>Email</th>
-                <th>Job</th>
                 <th>Company</th>
-                <th>Name</th>
-                <th>Role</th>
-                <th>Cover Letter Language</th>
-                <th>Email Language</th>
+                <th>Job</th>
                 <th>Status</th>
                 <th>Actions</th>
             </tr>
@@ -30,12 +26,8 @@
             <tr>
                 <td>{{ record.id }}</td>
                 <td>{{ record.email }}</td>
-                <td>{{ record.job }}</td>
                 <td>{{ record.company }}</td>
-                <td>{{ record.name if record.name else "-" }}</td>
-                <td>{{ record.role }}</td>
-                <td>{{ record.cover_letter_language }}</td>
-                <td>{{ record.email_language }}</td>
+                <td>{{ record.job }}</td>
                 <td>
                     {% if record.processed %}
                     <span class="badge bg-success">Processed</span>

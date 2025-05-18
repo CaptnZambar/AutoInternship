@@ -78,7 +78,7 @@ def get_current_date(language):
         # Format: "January 11, 2023"
         return datetime.now().strftime("%B %d, %Y")
 
-def generate_cover_letter(language, job, company, name, output_dir='output'):
+def generate_cover_letter(language, job, company, output_dir='output', first_name='', last_name='', title='', formality='formal'):
     """
     Generate a cover letter based on the language and provided details.
     """
@@ -91,18 +91,35 @@ def generate_cover_letter(language, job, company, name, output_dir='output'):
         if language.lower() == 'french':
             template_path = os.path.join('templates', 'cover_letter_french.docx')
             
-            # Set the appropriate name if not provided
-            recipient_name = name if name else "Madame, Monsieur"
+            # Set the appropriate salutation based on formality
+            if formality == 'formal' and title and last_name:
+                if title == 'Mr.':
+                    recipient_name = f"Cher M. {last_name}"
+                elif title == 'Ms.':
+                    recipient_name = f"Chère Mme. {last_name}"
+                else:
+                    recipient_name = f"Cher {last_name}"
+            elif formality == 'semi-formal' and first_name:
+                if title == 'Ms.':
+                    recipient_name = f"Chère {first_name}"
+                else:
+                    recipient_name = f"Cher {first_name}"
+            else:
+                recipient_name = "Madame, Monsieur"
+            
             signature = None  # No signature for French version
         else:
             template_path = os.path.join('templates', 'cover_letter_english.docx')
             
-            # Set the appropriate name and signature if not provided
-            if name:
-                recipient_name = name
+            # Set the appropriate salutation based on formality
+            if formality == 'formal' and title and last_name:
+                recipient_name = f"Dear {title} {last_name}"
+                signature = "Yours sincerely"
+            elif formality == 'semi-formal' and first_name:
+                recipient_name = f"Dear {first_name}"
                 signature = "Yours sincerely"
             else:
-                recipient_name = "Sir or Madam"
+                recipient_name = "Dear Sir or Madam"
                 signature = "Yours faithfully"
         
         # Format output file names
@@ -147,7 +164,7 @@ def generate_cover_letter(language, job, company, name, output_dir='output'):
         # Uninitialize COM
         pythoncom.CoUninitialize()
 
-def get_email_template(language, job, name, role):
+def get_email_template(language, job, role, first_name='', last_name='', title='', formality='formal'):
     """
     Return the email body text with placeholders replaced.
     """
@@ -156,13 +173,28 @@ def get_email_template(language, job, name, role):
         if language.lower() == 'french':
             template_path = os.path.join('templates', 'mail_french.txt')
             
-            # Set the appropriate name if not provided
-            recipient_name = "Bonjour " + name if name else "Madame, Monsieur"
-        else:
+            # Set the appropriate salutation based on formality
+            if formality == 'formal' and title and last_name:
+                if title == 'Mr.':
+                    recipient_name = f"Bonjour M. {last_name}"
+                elif title == 'Ms.':
+                    recipient_name = f"Bonjour Mme. {last_name}"
+                else:
+                    recipient_name = f"Bonjour {last_name}"
+            elif formality == 'semi-formal' and first_name:
+                recipient_name = f"Bonjour {first_name}"
+            else:
+                recipient_name = "Madame, Monsieur"
+        else:  # English
             template_path = os.path.join('templates', 'mail_english.txt')
             
-            # Set the appropriate name if not provided
-            recipient_name = name if name else "Sir or Madam"
+            # Set the appropriate salutation based on formality
+            if formality == 'formal' and title and last_name:
+                recipient_name = f"Dear {title} {last_name}"
+            elif formality == 'semi-formal' and first_name:
+                recipient_name = f"Dear {first_name}"
+            else:
+                recipient_name = "Dear Sir or Madam"
         
         # Read the template file
         with open(template_path, 'r', encoding='utf-8') as file:

@@ -40,12 +40,15 @@ def add():
         email = request.form['email']
         job = request.form.get('job', 'Trading Assistant')
         company = request.form['company']
-        name = request.form['name']
+        first_name = request.form.get('first_name', '')
+        last_name = request.form.get('last_name', '')
+        title = request.form.get('title', '')
+        formality = request.form.get('formality', 'formal')
         role = request.form.get('role', 'Trading Assistant')
         cover_letter_language = request.form.get('cover_letter_language', 'english')
         email_language = request.form.get('email_language', 'french')
         
-        add_record(email, job, company, name, role, cover_letter_language, email_language)
+        add_record(email, job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language)
         logger.info(f"Added new record for {email} at {company}")
         flash('Record added successfully!', 'success')
         return redirect(url_for('index'))
@@ -60,12 +63,15 @@ def edit(id):
         email = request.form['email']
         job = request.form.get('job', 'Trading Assistant')
         company = request.form['company']
-        name = request.form['name']
+        first_name = request.form.get('first_name', '')
+        last_name = request.form.get('last_name', '')
+        title = request.form.get('title', '')
+        formality = request.form.get('formality', 'formal')
         role = request.form.get('role', 'Trading Assistant')
         cover_letter_language = request.form.get('cover_letter_language', 'english')
         email_language = request.form.get('email_language', 'french')
         
-        update_record(id, email, job, company, name, role, cover_letter_language, email_language)
+        update_record(id, email, job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language)
         logger.info(f"Updated record {id} for {email} at {company}")
         flash('Record updated successfully!', 'success')
         return redirect(url_for('index'))
@@ -142,10 +148,16 @@ def standalone_cover_letter():
         language = request.form.get('language', 'english')
         job = request.form.get('job', 'Trading Assistant')
         company = request.form.get('company', '')
-        name = request.form.get('name', '')
+        first_name = request.form.get('first_name', '')
+        last_name = request.form.get('last_name', '')
+        title = request.form.get('title', '')
+        formality = request.form.get('formality', 'formal')
         
         try:
-            cl_path = generate_cover_letter(language, job, company, name, app.config['OUTPUT_DIR'])
+            cl_path = generate_cover_letter(
+                language, job, company, app.config['OUTPUT_DIR'],
+                first_name, last_name, title, formality
+            )
             logger.info(f"Successfully generated standalone cover letter for {company}, job: {job}")
             
             # Return the file for download

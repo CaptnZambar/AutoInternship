@@ -152,7 +152,10 @@ def process_single_record(record, output_dir='output'):
         email = record['email']
         job = record['job']
         company = record['company']
-        name = record['name']
+        first_name = record['first_name'] if 'first_name' in record.keys() else ''
+        last_name = record['last_name'] if 'last_name' in record.keys() else ''
+        title = record['title'] if 'title' in record.keys() else ''
+        formality = record['formality'] if 'formality' in record.keys() else 'formal'
         role = record['role']
         cover_letter_language = record['cover_letter_language']
         email_language = record['email_language']
@@ -167,10 +170,16 @@ def process_single_record(record, output_dir='output'):
         
         # Generate documents
         cv_path = generate_cv(role, output_dir)
-        cover_letter_path = generate_cover_letter(cover_letter_language, job, company, name, output_dir)
+        cover_letter_path = generate_cover_letter(
+            cover_letter_language, job, company, output_dir,
+            first_name, last_name, title, formality
+        )
         
         # Get email content with subject and body using email_language
-        email_subject, email_body = get_email_template(email_language, job, name, role)
+        email_subject, email_body = get_email_template(
+            email_language, job, role, 
+            first_name, last_name, title, formality
+        )
         
         # Send email with attachments
         attachments = [cv_path, cover_letter_path]
@@ -189,7 +198,11 @@ def process_single_record(record, output_dir='output'):
     
     except Exception as e:
         logger.error(f"Error processing record: {str(e)}")
-        return {"id": record.get('id', 'unknown'), "status": "error", "message": str(e)}
+        try:
+            record_id = record['id'] if record and 'id' in record.keys() else 'unknown'
+        except:
+            record_id = 'unknown'
+        return {"id": record_id, "status": "error", "message": str(e)}
 
 def process_email_queue(records, output_dir='output'):
     """
@@ -218,37 +231,39 @@ def process_email_queue(records, output_dir='output'):
         
         except Exception as e:
             logger.error(f"Error processing record: {str(e)}")
-            results.append({"id": record.get('id', 'unknown'), "status": "error", "message": str(e)})
+            try:
+                record_id = record['id'] if record and 'id' in record.keys() else 'unknown'
+            except:
+                record_id = 'unknown'
+            results.append({"id": record_id, "status": "error", "message": str(e)})
     
     return results
 
 def send_selected_emails(selected_records, output_dir='output'):
     """
-    Process only selected records from the database and send emails.
+    Process selected records from the database and send emails.
     
     Parameters:
     - selected_records: List of specific database records to process
     - output_dir: Directory to store generated files
     
     Returns:
-    - List of results for each record processed
+    - List of result dictionaries with status information
     """
     results = []
     
-    # Ensure output directory exists
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    
-    for record in selected_records:
-        try:
+    try:
+        # Process each record
+        for record in selected_records:
             result = process_single_record(record, output_dir)
             results.append(result)
             
-            # Add a small delay between emails to avoid rate limiting
-            time.sleep(2)
+            # If an error occurred, log it but continue processing
+            if result['status'] == 'error':
+                logger.error(f"Error processing record ID {result['id']}: {result['message']}")
         
-        except Exception as e:
-            logger.error(f"Error processing record: {str(e)}")
-            results.append({"id": record.get('id', 'unknown'), "status": "error", "message": str(e)})
+        return results
     
-    return results 
+    except Exception as e:
+        logger.error(f"Error processing selected emails: {str(e)}")
+        return results 
