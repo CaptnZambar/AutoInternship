@@ -1,0 +1,18 @@
+2025-05-18 13:17:24,035 - INFO - database - Database already exists: email_data.db
+2025-05-18 13:17:24,037 - INFO - app - Email automation application startup
+2025-05-18 13:17:24,064 - INFO - werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-05-18 13:17:24,064 - INFO - werkzeug - [33mPress CTRL+C to quit[0m
+2025-05-18 13:17:24,080 - INFO - werkzeug -  * Restarting with watchdog (windowsapi)
+2025-05-18 13:17:24,807 - INFO - database - Database already exists: email_data.db
+2025-05-18 13:17:24,808 - INFO - app - Email automation application startup
+2025-05-18 13:17:24,828 - WARNING - werkzeug -  * Debugger is active!
+2025-05-18 13:17:24,833 - INFO - werkzeug -  * Debugger PIN: 561-057-078
+2025-05-18 13:17:29,498 - INFO - app - Rendering main page
+2025-05-18 13:17:29,512 - INFO - werkzeug - 127.0.0.1 - - [18/May/2025 13:17:29] "GET / HTTP/1.1" 200 -
+2025-05-18 13:17:29,920 - INFO - werkzeug - 127.0.0.1 - - [18/May/2025 13:17:29] "[36mGET /static/favicon.ico HTTP/1.1[0m" 304 -
+2025-05-18 13:17:33,408 - INFO - werkzeug - 127.0.0.1 - - [18/May/2025 13:17:33] "GET /generate-cv HTTP/1.1" 200 -
+2025-05-18 13:17:33,669 - INFO - werkzeug - 127.0.0.1 - - [18/May/2025 13:17:33] "[36mGET /static/favicon.ico HTTP/1.1[0m" 304 -
+2025-05-18 13:17:41,919 - INFO - document_processor - Successfully generated CV for role: Trading Assistant
+2025-05-18 13:17:41,921 - INFO - app - Successfully generated standalone CV for role: Trading Assistant
+2025-05-18 13:17:41,922 - INFO - werkzeug - 127.0.0.1 - - [18/May/2025 13:17:41] "POST /generate-cv HTTP/1.1" 200 -
