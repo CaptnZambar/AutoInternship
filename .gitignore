@@ -1,5 +1,5 @@
 logs/
 output/
 __pycache__/
+private/
 email_data.db
-base_prompt.txt
