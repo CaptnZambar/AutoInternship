@@ -164,7 +164,7 @@ def generate_cover_letter(language, job, company, output_dir='output', first_nam
         # Uninitialize COM
         pythoncom.CoUninitialize()
 
-def get_email_template(language, job, role, first_name='', last_name='', title='', formality='formal'):
+def get_email_template(language, job, role=None, first_name='', last_name='', title='', formality='formal'):
     """
     Return the email body text with placeholders replaced.
     """
@@ -209,7 +209,7 @@ def get_email_template(language, job, role, first_name='', last_name='', title='
         body_section = sections[1].strip()
         
         # Replace placeholders in both sections
-        email_object = object_section.replace('{{ name }}', recipient_name).replace('{{ job }}', job).replace('{{ role }}', role)
+        email_object = object_section.replace('{{ name }}', recipient_name).replace('{{ job }}', job)
         email_body = body_section.replace('{{ name }}', recipient_name).replace('{{ job }}', job)
         
         return email_object, email_body

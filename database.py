@@ -25,7 +25,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS contacts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT NOT NULL,
-            job TEXT NOT NULL DEFAULT 'Trading Assistant',
+            english_job TEXT NOT NULL DEFAULT 'Trading Assistant',
+            french_job TEXT NOT NULL DEFAULT 'Assistant Trader',
             company TEXT NOT NULL,
             first_name TEXT,
             last_name TEXT,
@@ -56,6 +57,22 @@ def init_db():
         # Check for new fields
         schema_updated = False
         
+        # Migrate job field to english_job and add french_job if necessary
+        if 'job' in column_names and 'english_job' not in column_names:
+            logger.info("Migration: Splitting job field into english_job and french_job")
+            
+            # Add the new columns
+            cursor.execute("ALTER TABLE contacts ADD COLUMN english_job TEXT NOT NULL DEFAULT 'Trading Assistant'")
+            cursor.execute("ALTER TABLE contacts ADD COLUMN french_job TEXT NOT NULL DEFAULT 'Assistant Trader'")
+            
+            # Copy existing job data to english_job
+            cursor.execute("UPDATE contacts SET english_job = job")
+            
+            # Create a decent french translation for existing jobs
+            cursor.execute("UPDATE contacts SET french_job = CASE WHEN job = 'Trading Assistant' THEN 'Assistant Trader' ELSE job END")
+            
+            schema_updated = True
+        
         # Check if legacy name field exists but should be removed
         if 'name' in column_names:
             logger.info("Migration: Removing legacy name field")
@@ -65,7 +82,49 @@ def init_db():
             CREATE TABLE contacts_new (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 email TEXT NOT NULL,
-                job TEXT NOT NULL DEFAULT 'Trading Assistant',
+                english_job TEXT NOT NULL DEFAULT 'Trading Assistant',
+                french_job TEXT NOT NULL DEFAULT 'Assistant Trader',
+                company TEXT NOT NULL,
+                first_name TEXT,
+                last_name TEXT,
+                title TEXT,
+                formality TEXT DEFAULT 'formal',
+                role TEXT NOT NULL DEFAULT 'Trading Assistant',
+                cover_letter_language TEXT NOT NULL DEFAULT 'english',
+                email_language TEXT NOT NULL DEFAULT 'french',
+                processed BOOLEAN DEFAULT 0
+            )
+            ''')
+            
+            # Copy data from old table to new table
+            if 'english_job' in column_names:
+                cursor.execute('''
+                INSERT INTO contacts_new (id, email, english_job, french_job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, processed)
+                SELECT id, email, english_job, french_job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, processed FROM contacts
+                ''')
+            else:
+                cursor.execute('''
+                INSERT INTO contacts_new (id, email, english_job, french_job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, processed)
+                SELECT id, email, job, job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, processed FROM contacts
+                ''')
+            
+            # Drop old table and rename new table
+            cursor.execute('DROP TABLE contacts')
+            cursor.execute('ALTER TABLE contacts_new RENAME TO contacts')
+            
+            schema_updated = True
+        
+        # Add english_job and french_job if not exists but job does
+        if 'english_job' not in column_names and 'french_job' not in column_names and 'job' in column_names:
+            logger.info("Adding english_job and french_job columns")
+            
+            # Create a temporary table with the new schema
+            cursor.execute('''
+            CREATE TABLE contacts_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT NOT NULL,
+                english_job TEXT NOT NULL DEFAULT 'Trading Assistant',
+                french_job TEXT NOT NULL DEFAULT 'Assistant Trader',
                 company TEXT NOT NULL,
                 first_name TEXT,
                 last_name TEXT,
@@ -80,8 +139,8 @@ def init_db():
             
             # Copy data from old table to new table
             cursor.execute('''
-            INSERT INTO contacts_new (id, email, job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, processed)
-            SELECT id, email, job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, processed FROM contacts
+            INSERT INTO contacts_new (id, email, english_job, french_job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, processed)
+            SELECT id, email, job, job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, processed FROM contacts
             ''')
             
             # Drop old table and rename new table
@@ -119,7 +178,8 @@ def init_db():
             CREATE TABLE contacts_new (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 email TEXT NOT NULL,
-                job TEXT NOT NULL DEFAULT 'Trading Assistant',
+                english_job TEXT NOT NULL DEFAULT 'Trading Assistant',
+                french_job TEXT NOT NULL DEFAULT 'Assistant Trader',
                 company TEXT NOT NULL,
                 first_name TEXT,
                 last_name TEXT,
@@ -133,10 +193,16 @@ def init_db():
             ''')
             
             # Copy data from old table to new table
-            cursor.execute('''
-            INSERT INTO contacts_new (id, email, job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, processed)
-            SELECT id, email, job, company, first_name, last_name, title, formality, role, language, mail_language, processed FROM contacts
-            ''')
+            if 'english_job' in column_names:
+                cursor.execute('''
+                INSERT INTO contacts_new (id, email, english_job, french_job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, processed)
+                SELECT id, email, english_job, french_job, company, first_name, last_name, title, formality, role, language, mail_language, processed FROM contacts
+                ''')
+            else:
+                cursor.execute('''
+                INSERT INTO contacts_new (id, email, english_job, french_job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, processed)
+                SELECT id, email, job, job, company, first_name, last_name, title, formality, role, language, mail_language, processed FROM contacts
+                ''')
             
             # Drop old table and rename new table
             cursor.execute('DROP TABLE contacts')
@@ -166,15 +232,15 @@ def get_all_records(id=None):
         conn.close()
         return records
 
-def add_record(email, job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language):
+def add_record(email, english_job, french_job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language):
     """Add a new record to the database"""
     conn = get_db_connection()
     cursor = conn.cursor()
     
     cursor.execute('''
-    INSERT INTO contacts (email, job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, processed)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
-    ''', (email, job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language))
+    INSERT INTO contacts (email, english_job, french_job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, processed)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+    ''', (email, english_job, french_job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language))
     
     conn.commit()
     record_id = cursor.lastrowid
@@ -183,16 +249,16 @@ def add_record(email, job, company, first_name, last_name, title, formality, rol
     logger.info(f"Added new record ID: {record_id} for {email}")
     return record_id
 
-def update_record(id, email, job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language):
+def update_record(id, email, english_job, french_job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language):
     """Update an existing record"""
     conn = get_db_connection()
     cursor = conn.cursor()
     
     cursor.execute('''
     UPDATE contacts 
-    SET email = ?, job = ?, company = ?, first_name = ?, last_name = ?, title = ?, formality = ?, role = ?, cover_letter_language = ?, email_language = ?, processed = 0
+    SET email = ?, english_job = ?, french_job = ?, company = ?, first_name = ?, last_name = ?, title = ?, formality = ?, role = ?, cover_letter_language = ?, email_language = ?, processed = 0
     WHERE id = ?
-    ''', (email, job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, id))
+    ''', (email, english_job, french_job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language, id))
     
     conn.commit()
     conn.close()

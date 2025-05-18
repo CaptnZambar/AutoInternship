@@ -16,7 +16,7 @@
                 <th>ID</th>
                 <th>Email</th>
                 <th>Company</th>
-                <th>Job</th>
+                <th>Job (EN/FR)</th>
                 <th>Status</th>
                 <th>Actions</th>
             </tr>
@@ -27,7 +27,13 @@
                 <td>{{ record.id }}</td>
                 <td>{{ record.email }}</td>
                 <td>{{ record.company }}</td>
-                <td>{{ record.job }}</td>
+                <td>
+                    {% if 'english_job' in record.keys() and 'french_job' in record.keys() %}
+                        {{ record.english_job }} / {{ record.french_job }}
+                    {% else %}
+                        {{ record.job }}
+                    {% endif %}
+                </td>
                 <td>
                     {% if record.processed %}
                     <span class="badge bg-success">Processed</span>

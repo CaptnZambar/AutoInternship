@@ -16,9 +16,17 @@
                 <input type="email" class="form-control" id="email" name="email" value="{{ record.email }}" required>
             </div>
             
-            <div class="mb-3">
-                <label for="job" class="form-label">Job Position <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="job" name="job" value="{{ record.job }}" required>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="english_job" class="form-label">Job Position (English) <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="english_job" name="english_job" value="{{ record.english_job if 'english_job' in record.keys() else record.job }}" required>
+                    <div class="form-text">Used in English emails and cover letters.</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="french_job" class="form-label">Job Position (French) <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="french_job" name="french_job" value="{{ record.french_job if 'french_job' in record.keys() else record.job }}" required>
+                    <div class="form-text">Used in French emails and cover letters.</div>
+                </div>
             </div>
             
             <div class="mb-3">

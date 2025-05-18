@@ -38,7 +38,8 @@ def add():
     if request.method == 'POST':
         logger.info("Processing add record request")
         email = request.form['email']
-        job = request.form.get('job', 'Trading Assistant')
+        english_job = request.form.get('english_job', 'Trading Assistant')
+        french_job = request.form.get('french_job', 'Assistant Trader')
         company = request.form['company']
         first_name = request.form.get('first_name', '')
         last_name = request.form.get('last_name', '')
@@ -48,7 +49,7 @@ def add():
         cover_letter_language = request.form.get('cover_letter_language', 'english')
         email_language = request.form.get('email_language', 'french')
         
-        add_record(email, job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language)
+        add_record(email, english_job, french_job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language)
         logger.info(f"Added new record for {email} at {company}")
         flash('Record added successfully!', 'success')
         return redirect(url_for('index'))
@@ -61,7 +62,8 @@ def edit(id):
     if request.method == 'POST':
         logger.info(f"Processing edit request for record {id}")
         email = request.form['email']
-        job = request.form.get('job', 'Trading Assistant')
+        english_job = request.form.get('english_job', 'Trading Assistant')
+        french_job = request.form.get('french_job', 'Assistant Trader')
         company = request.form['company']
         first_name = request.form.get('first_name', '')
         last_name = request.form.get('last_name', '')
@@ -71,7 +73,7 @@ def edit(id):
         cover_letter_language = request.form.get('cover_letter_language', 'english')
         email_language = request.form.get('email_language', 'french')
         
-        update_record(id, email, job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language)
+        update_record(id, email, english_job, french_job, company, first_name, last_name, title, formality, role, cover_letter_language, email_language)
         logger.info(f"Updated record {id} for {email} at {company}")
         flash('Record updated successfully!', 'success')
         return redirect(url_for('index'))
@@ -146,17 +148,21 @@ def standalone_cv():
 def standalone_cover_letter():
     if request.method == 'POST':
         language = request.form.get('language', 'english')
-        job = request.form.get('job', 'Trading Assistant')
+        english_job = request.form.get('english_job', 'Trading Assistant')
+        french_job = request.form.get('french_job', 'Assistant Trader')
         company = request.form.get('company', '')
         first_name = request.form.get('first_name', '')
         last_name = request.form.get('last_name', '')
         title = request.form.get('title', '')
         formality = request.form.get('formality', 'formal')
         
+        # Use the appropriate job title based on the selected language
+        job = english_job if language == 'english' else french_job
+        
         try:
             cl_path = generate_cover_letter(
-                language, job, company, app.config['OUTPUT_DIR'],
-                first_name, last_name, title, formality
+                language, job, company, output_dir=app.config['OUTPUT_DIR'],
+                first_name=first_name, last_name=last_name, title=title, formality=formality
             )
             logger.info(f"Successfully generated standalone cover letter for {company}, job: {job}")
             

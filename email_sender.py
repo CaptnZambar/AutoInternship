@@ -150,7 +150,11 @@ def process_single_record(record, output_dir='output'):
     try:
         record_id = record['id']
         email = record['email']
-        job = record['job']
+        
+        # Get language-specific job titles
+        english_job = record['english_job'] if 'english_job' in record.keys() else record['job'] 
+        french_job = record['french_job'] if 'french_job' in record.keys() else record['job']
+        
         company = record['company']
         first_name = record['first_name'] if 'first_name' in record.keys() else ''
         last_name = record['last_name'] if 'last_name' in record.keys() else ''
@@ -168,17 +172,21 @@ def process_single_record(record, output_dir='output'):
         
         logger.info(f"Processing record ID: {record_id}, email: {email}")
         
+        # Use the appropriate job title based on language
+        job_for_cover_letter = english_job if cover_letter_language == 'english' else french_job
+        job_for_email = english_job if email_language == 'english' else french_job
+        
         # Generate documents
         cv_path = generate_cv(role, output_dir)
         cover_letter_path = generate_cover_letter(
-            cover_letter_language, job, company, output_dir,
-            first_name, last_name, title, formality
+            cover_letter_language, job_for_cover_letter, company, output_dir=output_dir,
+            first_name=first_name, last_name=last_name, title=title, formality=formality
         )
         
         # Get email content with subject and body using email_language
         email_subject, email_body = get_email_template(
-            email_language, job, role, 
-            first_name, last_name, title, formality
+            email_language, job_for_email, role, 
+            first_name=first_name, last_name=last_name, title=title, formality=formality
         )
         
         # Send email with attachments

@@ -1,5 +1,5 @@
 #OBJECT 
-Application {{ role }} – From July to December 2025
+Application {{ job }} – From July to December 2025
 
 #BODY
 {{ name }}

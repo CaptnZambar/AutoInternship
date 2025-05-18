@@ -1,5 +1,5 @@
 #OBJECT
-Stage {{ role }} – Juillet à Décembre 2025
+Stage {{ job }} – Juillet à Décembre 2025
 
 #BODY
 {{ name }}
